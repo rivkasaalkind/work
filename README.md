@@ -1,15 +1,159 @@
-https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG7zdpScRXzs8uOKRUErR3MgVSrRt_q4kfARiJ8OPrw9AvoPwtWeUyH-aduH84LDPeVMq8oRP49TLEgvehp7w9M5I2xPgfAbdsVFB05Ml36CKF227Ta1IhF7Y_0DwwpVEaeoBlJLRajtsPr-I5T1Faydwll9XJxE5jWj7uJh9gOMXmqMD0kdZBdOcEpplpWmMyC
+הדרך המומלצת והיעילה ביותר ליצור קבצי Word (בפורמט `.docx`) גם ב-Node.js וגם ב-React היא באמצעות הספרייה **`docx`**. ספרייה זו מאפשרת בנייה של מסמכים בצורה מבנית (Declarative) ותומכת בצורה מעולה בכותרות, פסקאות וטבלאות דינמיות.
 
-https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQH2Ribn6Z7emI9ew1JocToCiXW00lK8rS9dTSovEFlmgYdN-v5veV02D7rXPcq_2UcmIokHEiUYL7ZKYLX85BqAIaHpq7vsbUpr7mvScBR4zniXIRGVDKfpc4xrex4bcaYh2mL7UQ==
+מכיוון שהלוגיקה של בניית המסמך זהה לחלוטין בשרת (Node.js) ובצד הלקוח (React), אדגים כיצד לממש זאת ב-React, עם הערה קטנה בסוף לגבי ההתאמה ל-Node.js.
 
-https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFE1Rrc81VjTNt5XraR95_i8K5OfuR7C79mqXiu6DO_DI7s-WqCl7hI6Vb0XlcOq5UJs2ZZK_ZCBLLkfAzA6pT-210R4sVPitiXVsbY1MCNkiYqFFY_wywXpKbyBiVXi_pzTxpEs2zG4iJPJMHnH141QAnAWSRnMXgWMu4zDqQAj_XkDTpqJn-VEh-XqAHLule7dZ01Z8to_a0-9YnSctnokul2
+### שלב 1: התקנת ספריות
 
-https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF0JsWV4_E__ecpkxoiDqK_vWKxv5LRl2zcLn6IysLvZcT1tS9IHPrF71LE97EJLZDfEAo5xyWeL7AHpj94VqFw67P8WrKQL5zx33C8EDitHiDW3W1gt4jux2nQMEFSsH3Tvo3YNDDL90wstLG94madptbwW6EF2sIDYud9KLmmqODv
+בפרויקט שלך, התקיני את הספרייה `docx` וכן את `file-saver` שיעזור לנו להוריד את הקובץ בדפדפן:
 
-https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEG6ZnGU83_8Qa2ZWFDD3-M3il3XBAJ0d3P2Hu6_XRpAO1wvjxqsAx6BpSOFCaNltAvce4XX38d6LgVtpKJMRv23MkC3SmJ3h2G30g_uOsnjNVe3WUsso9NJtoIfaNSpJG9oUd_f55HtbS-Pvi0GFg5Rs9caH2Ylh6Q8Z802g4svlefSLtZRy-zQBRMrVwbSwCi00lXR0rb0w==
+```bash
+npm install docx file-saver
 
-https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGtfYh-H98kByma3bdXHYQQFqEJqghIENih6yLt0UrU1T8Mv9RoYEHN1KXHNYWOyWbvdqix0JS8Rp-qJhFjsRT0M3EB3yOY2ASinJKUdCrR8bRRtmMJaPu7jA_J_kA0J0iJYPzhbKF5vW_fuGQzueHTIw4DmQEDZtxbPdIFYB3dHenQHJ_-dt0IF0OMoef5eJbgUWZbu8sXugK6rxBMUQ==
+```
 
-https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFFvdwOmGo-RNpG2fOorHCppemXx3cxCS9pZlLXMC1j3vEzHBaLfin3dU6FRxvw-VaDR-LwuuiaURt0VfBsrYPRjh3VOVWg30zdesoduNueA3k5tHl17CRJjxyp7oS1MpM3OfM5Xw_1pg21GD4XW2nadWlSK4xZ0jOkF4Ua9QcUp5QeNeoG40IU31EeGPYLpo-ZJbkdxZTzqs5iIbuWNYAH
+### שלב 2: הכנת מבנה הנתונים
 
-https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHJBx8s-5r3V7jRpv8tljl8YJOgSAk7RSqrZvJEZqHHcO1jOK2Ppz7oatfl_T_P5OkiGgKlrXGIjmSIbWC2hMQEFYdf4doNHJZ6p0Xt3XxKOxC-FHwUiyQLAMaguFCKppNsxQkj86i_cyMCAJ95yL1XzfRsvkujI3cxh2ph0Zj29m6mTF2U94hjtLhNFf45JJQ8c1pNGv5aSnjW9GILFbNEDGi1dxh-wUn73bjbLOnrnbSI5JTJaZzFI7Bh9Uw=
+נניח שמבנה הנתונים שלך (ה-Content) נראה בערך כך (מערך של אובייקטים):
+
+```javascript
+const myContent = [
+  {
+    title: "כותרת פסקה ראשונה",
+    text: "זהו התוכן המילולי של הפסקה הראשונה. כאן נסביר על הנושא.",
+    // הטבלה היא מערך של מערכים (שורות שבתוכן עמודות)
+    tableData: [
+      ["שם המוצר", "כמות", "מחיר"],
+      ["מקלדת", "2", "150"],
+      ["עכבר", "5", "80"]
+    ]
+  },
+  {
+    title: "כותרת פסקה שנייה",
+    text: "פסקה זו מכילה טבלה בגודל שונה, כדי להדגים דינמיות.",
+    tableData: [
+      ["מזהה", "סטטוס"],
+      ["1", "פעיל"],
+      ["2", "לא פעיל"],
+      ["3", "בטיפול"],
+      ["4", "הושלם"]
+    ]
+  }
+];
+
+```
+
+### שלב 3: כתיבת פונקציית הייצוא (React)
+
+כאן אנו בונים את המסמך. הטריק לטבלה דינמית הוא להשתמש בפונקציית `map` על מערך הנתונים כדי לייצר את ה-`TableRow` (שורות) וה-`TableCell` (תאים/עמודות) בהתאם לכמות הנתונים בפועל.
+
+```javascript
+import React from 'react';
+import { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, HeadingLevel, WidthType } from "docx";
+import { saveAs } from "file-saver";
+
+const ExportToWord = ({ content }) => {
+
+  const generateDocument = async () => {
+    const documentChildren = [];
+
+    // עוברים על כל חלקי התוכן
+    content.forEach(section => {
+      
+      // 1. הוספת הכותרת
+      documentChildren.push(
+        new Paragraph({
+          text: section.title,
+          heading: HeadingLevel.HEADING_1,
+          spacing: { before: 400, after: 200 }, // רווחים לפני ואחרי הכותרת
+        })
+      );
+
+      // 2. הוספת התוכן המילולי
+      documentChildren.push(
+        new Paragraph({
+          children: [new TextRun(section.text)],
+          spacing: { after: 300 },
+        })
+      );
+
+      // 3. יצירת טבלה דינמית (אם קיימים נתונים)
+      if (section.tableData && section.tableData.length > 0) {
+        
+        // יצירת השורות באופן דינמי
+        const tableRows = section.tableData.map(rowData => {
+          
+          // יצירת העמודות (התאים) עבור כל שורה באופן דינמי
+          const tableCells = rowData.map(cellValue => {
+            return new TableCell({
+              children: [new Paragraph(cellValue.toString())],
+              margins: { top: 100, bottom: 100, left: 100, right: 100 }, // ריווח פנימי בתא
+            });
+          });
+
+          return new TableRow({
+            children: tableCells,
+          });
+        });
+
+        // יצירת הטבלה עצמה
+        const table = new Table({
+          rows: tableRows,
+          width: {
+            size: 100,
+            type: WidthType.PERCENTAGE, // הטבלה תתפרס על כל רוחב העמוד
+          },
+        });
+
+        documentChildren.push(table);
+      }
+    });
+
+    // יצירת אובייקט המסמך המרכזי
+    const doc = new Document({
+      sections: [
+        {
+          properties: {},
+          children: documentChildren,
+        },
+      ],
+    });
+
+    // אריזת המסמך לקובץ והורדה שלו (בצד הלקוח)
+    const blob = await Packer.toBlob(doc);
+    saveAs(blob, "Exported_Content.docx");
+  };
+
+  return (
+    <button onClick={generateDocument} style={{ padding: '10px 20px', cursor: 'pointer' }}>
+      ייצא לקובץ Word
+    </button>
+  );
+};
+
+export default ExportToWord;
+
+```
+
+---
+
+### איך זה עובד?
+
+1. **לולאת `forEach`:** עוברת על כל פסקה ומייצרת עבורה אובייקטים של Word (`Paragraph` לכותרות ולטקסט).
+2. **טבלה דינמית:** השימוש ב-`section.tableData.map` מאפשר לנו לא להיות תלויים במספר קבוע של שורות או עמודות. אם במערך יש 5 שורות ו-2 עמודות, הלולאה תייצר בדיוק את המספר הזה של אובייקטי `TableRow` ו-`TableCell`.
+3. **`Packer`:** לוקח את כל המבנה הזה והופך אותו לקובץ בינארי שניתן לקריאה על ידי תוכנת Word.
+
+### התאמה ל-Node.js (צד שרת)
+
+אם את מעדיפה לייצר את הקובץ בשרת (Node.js) ולשלוח אותו בחזרה ללקוח, קוד בניית המסמך נשאר **זהה לחלוטין**. ההבדל היחיד הוא בסוף התהליך: במקום להשתמש ב-`Packer.toBlob` ולהוריד עם `file-saver`, את משתמשת ב-`Packer.toBuffer` ושולחת אותו בתגובה (Response) מהשרת:
+
+```javascript
+// קוד שמבוצע בשרת (לדוגמה ב-Express)
+const buffer = await Packer.toBuffer(doc);
+
+res.setHeader('Content-Disposition', 'attachment; filename=Exported_Content.docx');
+res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+res.send(buffer);
+
+```
+
+האם תרצי שאראה לך כיצד להוסיף עיצובים מתקדמים לטבלה, כמו שורת כותרת מודגשת או צבעי רקע לתאים?
