@@ -209,4 +209,54 @@ const createParagraphFromMarkdown = (markdownText) => {
   });
 };
 איך משתמשים בזה בקוד מהתשובה הקודמת?
-במקום לכתוב new Paragraph({ children: [new TextRun(section.text)] }), את פשוט קוראת לפונקציה: createParagraphFromMarkdown(section.text).
+במקום לכתוב new Paragraph({ children: [new TextRun(section.text)] }), את פשוט קוראת לפונקציה: createParagraphFromMarkdown(section.text)
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+כדי להצמיד את הטקסט לשוליים הימניים (במיוחד כשעובדים עם שפה כמו עברית), צריך להגדיר שני דברים ברמת הפסקה (Paragraph): **יישור (Alignment)** ו**כיווניות טקסט (RTL/Bidi)**.
+
+השימוש ב-`bidi: true` (Bidirectional) הוא קריטי בעברית, מכיוון שבלעדיו סימני פיסוק (כמו נקודה או פסיק) עלולים "לקפוץ" לצד הלא נכון של המשפט, גם אם הטקסט מיושר לימין.
+
+כך תעשי זאת בספריית `docx`:
+
+### שלב 1: ייבוא ההגדרות הנדרשות
+
+קודם כל, הוסיפי את `AlignmentType` לרשימת הייבוא שלך מהספרייה:
+
+```javascript
+import { Paragraph, TextRun, HeadingLevel, AlignmentType } from "docx";
+
+```
+
+### שלב 2: הוספת ההגדרות לפסקאות
+
+כעת, נעדכן את הפונקציה `createParagraphFromMarkdown` שראינו קודם ונוסיף לה את יישור הימין והכיווניות:
+
+```javascript
+const createParagraphFromMarkdown = (markdownText) => {
+  // 1. טיפול בכותרות (###)
+  if (markdownText.startsWith('### ')) {
+    const cleanText = markdownText.replace('### ', ''); 
+    return new Paragraph({
+      text: cleanText,
+      heading: HeadingLevel.HEADING_3,
+      alignment: AlignmentType.RIGHT, // יישור לימין
+      bidi: true, // הגדרת כיווניות מימין לשמאל (RTL)
+    });
+  }
+
+  // 2. טיפול בפסקאות רגילות (כולל טקסט מודגש)
+  return new Paragraph({
+    children: parseBoldText(markdownText),
+    alignment: AlignmentType.RIGHT, // יישור לימין
+    bidi: true, // הגדרת כיווניות מימין לשמאל (RTL)
+  });
+};
+
+```
+
+> **טיפ חשוב לגבי טבלאות:** > אם את משתמשת בטבלאות (כמו בדוגמה הראשונה שלך), כדאי להוסיף `alignment: AlignmentType.RIGHT` ו-`bidi: true` גם לפסקאות שנוצרות בתוך התאים (בתוך ה-`TableCell`), כדי שגם התוכן בטבלה ייראה מצוין.
+
+---
+
+האם תרצי שאראה לך כיצד להגדיר ש**כל המסמך** יהיה מימין-לשמאל (RTL) כברירת מחדל בהגדרות הראשיות, כך שלא תצטרכי לציין זאת ידנית עבור כל פסקה בנפרד?
