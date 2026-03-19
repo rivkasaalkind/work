@@ -1,262 +1,282 @@
-הדרך המומלצת והיעילה ביותר ליצור קבצי Word (בפורמט `.docx`) גם ב-Node.js וגם ב-React היא באמצעות הספרייה **`docx`**. ספרייה זו מאפשרת בנייה של מסמכים בצורה מבנית (Declarative) ותומכת בצורה מעולה בכותרות, פסקאות וטבלאות דינמיות.
+Grounding with Google Search connects the Gemini model to real-time web content
+and works with all available languages. This allows
+Gemini to provide more accurate answers and cite verifiable sources beyond its
+knowledge cutoff.
 
-מכיוון שהלוגיקה של בניית המסמך זהה לחלוטין בשרת (Node.js) ובצד הלקוח (React), אדגים כיצד לממש זאת ב-React, עם הערה קטנה בסוף לגבי ההתאמה ל-Node.js.
+Grounding helps you build applications that can:
 
-### שלב 1: התקנת ספריות
+- **Increase factual accuracy:** Reduce model hallucinations by basing responses on real-world information.
+- **Access real-time information:** Answer questions about recent events and topics.
+- **Provide citations:** Build user trust by showing the sources for the
+  model's claims.
 
-בפרויקט שלך, התקיני את הספרייה `docx` וכן את `file-saver` שיעזור לנו להוריד את הקובץ בדפדפן:
+### Python
 
-```bash
-npm install docx file-saver
+    from google import genai
+    from google.genai import types
 
-```
+    client = genai.Client()
 
-### שלב 2: הכנת מבנה הנתונים
+    grounding_tool = types.Tool(
+        google_search=types.GoogleSearch()
+    )
 
-נניח שמבנה הנתונים שלך (ה-Content) נראה בערך כך (מערך של אובייקטים):
+    config = types.GenerateContentConfig(
+        tools=[grounding_tool]
+    )
 
-```javascript
-const myContent = [
-  {
-    title: "כותרת פסקה ראשונה",
-    text: "זהו התוכן המילולי של הפסקה הראשונה. כאן נסביר על הנושא.",
-    // הטבלה היא מערך של מערכים (שורות שבתוכן עמודות)
-    tableData: [
-      ["שם המוצר", "כמות", "מחיר"],
-      ["מקלדת", "2", "150"],
-      ["עכבר", "5", "80"]
-    ]
-  },
-  {
-    title: "כותרת פסקה שנייה",
-    text: "פסקה זו מכילה טבלה בגודל שונה, כדי להדגים דינמיות.",
-    tableData: [
-      ["מזהה", "סטטוס"],
-      ["1", "פעיל"],
-      ["2", "לא פעיל"],
-      ["3", "בטיפול"],
-      ["4", "הושלם"]
-    ]
-  }
-];
+    response = client.models.generate_content(
+        model="gemini-3-flash-preview",
+        contents="Who won the euro 2024?",
+        config=config,
+    )
 
-```
+    print(response.text)
 
-### שלב 3: כתיבת פונקציית הייצוא (React)
+### JavaScript
 
-כאן אנו בונים את המסמך. הטריק לטבלה דינמית הוא להשתמש בפונקציית `map` על מערך הנתונים כדי לייצר את ה-`TableRow` (שורות) וה-`TableCell` (תאים/עמודות) בהתאם לכמות הנתונים בפועל.
+    import { GoogleGenAI } from "@google/genai";
 
-```javascript
-import React from 'react';
-import { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, HeadingLevel, WidthType } from "docx";
-import { saveAs } from "file-saver";
+    const ai = new GoogleGenAI({});
 
-const ExportToWord = ({ content }) => {
+    const groundingTool = {
+      googleSearch: {},
+    };
 
-  const generateDocument = async () => {
-    const documentChildren = [];
+    const config = {
+      tools: [groundingTool],
+    };
 
-    // עוברים על כל חלקי התוכן
-    content.forEach(section => {
-      
-      // 1. הוספת הכותרת
-      documentChildren.push(
-        new Paragraph({
-          text: section.title,
-          heading: HeadingLevel.HEADING_1,
-          spacing: { before: 400, after: 200 }, // רווחים לפני ואחרי הכותרת
-        })
-      );
-
-      // 2. הוספת התוכן המילולי
-      documentChildren.push(
-        new Paragraph({
-          children: [new TextRun(section.text)],
-          spacing: { after: 300 },
-        })
-      );
-
-      // 3. יצירת טבלה דינמית (אם קיימים נתונים)
-      if (section.tableData && section.tableData.length > 0) {
-        
-        // יצירת השורות באופן דינמי
-        const tableRows = section.tableData.map(rowData => {
-          
-          // יצירת העמודות (התאים) עבור כל שורה באופן דינמי
-          const tableCells = rowData.map(cellValue => {
-            return new TableCell({
-              children: [new Paragraph(cellValue.toString())],
-              margins: { top: 100, bottom: 100, left: 100, right: 100 }, // ריווח פנימי בתא
-            });
-          });
-
-          return new TableRow({
-            children: tableCells,
-          });
-        });
-
-        // יצירת הטבלה עצמה
-        const table = new Table({
-          rows: tableRows,
-          width: {
-            size: 100,
-            type: WidthType.PERCENTAGE, // הטבלה תתפרס על כל רוחב העמוד
-          },
-        });
-
-        documentChildren.push(table);
-      }
+    const response = await ai.models.generateContent({
+      model: "gemini-3-flash-preview",
+      contents: "Who won the euro 2024?",
+      config,
     });
 
-    // יצירת אובייקט המסמך המרכזי
-    const doc = new Document({
-      sections: [
+    console.log(response.text);
+
+### REST
+
+    curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent" \
+      -H "x-goog-api-key: $GEMINI_API_KEY" \
+      -H "Content-Type: application/json" \
+      -X POST \
+      -d '{
+        "contents": [
+          {
+            "parts": [
+              {"text": "Who won the euro 2024?"}
+            ]
+          }
+        ],
+        "tools": [
+          {
+            "google_search": {}
+          }
+        ]
+      }'
+
+You can learn more by trying the [Search tool
+notebook](https://colab.research.google.com/github/google-gemini/cookbook/blob/main/quickstarts/Search_Grounding.ipynb).
+
+## How grounding with Google Search works
+
+When you enable the `google_search` tool, the model handles the entire workflow
+of searching, processing, and citing information automatically.
+
+![grounding-overview](https://ai.google.dev/static/gemini-api/docs/images/google-search-tool-overview.png)
+
+1. **User Prompt:** Your application sends a user's prompt to the Gemini API with the `google_search` tool enabled.
+2. **Prompt Analysis:** The model analyzes the prompt and determines if a Google Search can improve the answer.
+3. **Google Search:** If needed, the model automatically generates one or multiple search queries and executes them.
+4. **Search Results Processing:** The model processes the search results, synthesizes the information, and formulates a response.
+5. **Grounded Response:** The API returns a final, user-friendly response that is grounded in the search results. This response includes the model's text answer and `groundingMetadata` with the search queries, web results, and citations.
+
+## Understanding the grounding response
+
+When a response is successfully grounded, the response includes a
+`groundingMetadata` field. This structured data is essential for verifying
+claims and building a rich citation experience in your application.
+
+    {
+      "candidates": [
         {
-          properties: {},
-          children: documentChildren,
-        },
-      ],
-    });
-
-    // אריזת המסמך לקובץ והורדה שלו (בצד הלקוח)
-    const blob = await Packer.toBlob(doc);
-    saveAs(blob, "Exported_Content.docx");
-  };
-
-  return (
-    <button onClick={generateDocument} style={{ padding: '10px 20px', cursor: 'pointer' }}>
-      ייצא לקובץ Word
-    </button>
-  );
-};
-
-export default ExportToWord;
-
-```
-
----
-
-### איך זה עובד?
-
-1. **לולאת `forEach`:** עוברת על כל פסקה ומייצרת עבורה אובייקטים של Word (`Paragraph` לכותרות ולטקסט).
-2. **טבלה דינמית:** השימוש ב-`section.tableData.map` מאפשר לנו לא להיות תלויים במספר קבוע של שורות או עמודות. אם במערך יש 5 שורות ו-2 עמודות, הלולאה תייצר בדיוק את המספר הזה של אובייקטי `TableRow` ו-`TableCell`.
-3. **`Packer`:** לוקח את כל המבנה הזה והופך אותו לקובץ בינארי שניתן לקריאה על ידי תוכנת Word.
-
-### התאמה ל-Node.js (צד שרת)
-
-אם את מעדיפה לייצר את הקובץ בשרת (Node.js) ולשלוח אותו בחזרה ללקוח, קוד בניית המסמך נשאר **זהה לחלוטין**. ההבדל היחיד הוא בסוף התהליך: במקום להשתמש ב-`Packer.toBlob` ולהוריד עם `file-saver`, את משתמשת ב-`Packer.toBuffer` ושולחת אותו בתגובה (Response) מהשרת:
-
-```javascript
-// קוד שמבוצע בשרת (לדוגמה ב-Express)
-const buffer = await Packer.toBuffer(doc);
-
-res.setHeader('Content-Disposition', 'attachment; filename=Exported_Content.docx');
-res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-res.send(buffer);
-
-```
-
-האם תרצי שאראה לך כיצד להוסיף עיצובים מתקדמים לטבלה, כמו שורת כותרת מודגשת או צבעי רקע לתאים
-
--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-הבחנה מצוינת! הבעיה שאת מתארת היא מציאותית ונפוצה מאוד. ספריית docx (וגם ספריות דומות אחרות) לא מבינה Markdown "מהקופסה". מבחינתה, ** או ### הם סתם תווים רגילים, ולכן היא פשוט מדפיסה אותם כפי שהם.
-
-כדי שהמסמך יקבל את העיצוב הרצוי (כמו טקסט מודגש או כותרת בגודל הנכון), אנחנו צריכים לפרש (לפארס - Parse) את ה-Markdown ולהמיר אותו לאובייקטים שהספרייה מבינה (כמו TextRun עם מאפיין bold: true או Paragraph עם מאפיין heading).
-
-הנה שתי דרכים להתמודד עם זה, תלוי ברמת המורכבות של ה-Markdown שלך:
-
-אופציה 1: המרה נקודתית (מומלץ ל-Markdown פשוט)
-אם ה-Markdown שלך מורכב בעיקר מהדגשות (**) וכותרות פשוטות (###), הדרך היעילה ביותר היא לכתוב פונקציות עזר קטנות שיפענחו את הטקסט בזמן בניית המסמך.
-
-הנה קוד שמדגים איך להמיר טקסט עם כוכביות לאובייקטים של TextRun מודגשים, ואיך לזהות סולמיות (###) כדי להפוך אותן לכותרות:
-
-JavaScript
-import { Paragraph, TextRun, HeadingLevel } from "docx";
-
-// 1. פונקציה שממירה טקסט עם ** למערך של TextRun (מודגש ורגיל)
-const parseBoldText = (text) => {
-  // מפצלים את הטקסט לפי התבנית של הכוכביות
-  const parts = text.split(/(\*\*.*?\*\*)/g); 
-  
-  return parts.filter(part => part.length > 0).map((part) => {
-    // אם החלק עטוף בכוכביות, נגדיר אותו כמודגש ונסיר את הכוכביות
-    if (part.startsWith('**') && part.endsWith('**')) {
-      return new TextRun({
-        text: part.slice(2, -2), 
-        bold: true,
-      });
+          "content": {
+            "parts": [
+              {
+                "text": "Spain won Euro 2024, defeating England 2-1 in the final. This victory marks Spain's record fourth European Championship title."
+              }
+            ],
+            "role": "model"
+          },
+          "groundingMetadata": {
+            "webSearchQueries": [
+              "UEFA Euro 2024 winner",
+              "who won euro 2024"
+            ],
+            "searchEntryPoint": {
+              "renderedContent": "<!-- HTML and CSS for the search widget -->"
+            },
+            "groundingChunks": [
+              {"web": {"uri": "https://vertexaisearch.cloud.google.com.....", "title": "aljazeera.com"}},
+              {"web": {"uri": "https://vertexaisearch.cloud.google.com.....", "title": "uefa.com"}}
+            ],
+            "groundingSupports": [
+              {
+                "segment": {"startIndex": 0, "endIndex": 85, "text": "Spain won Euro 2024, defeatin..."},
+                "groundingChunkIndices": [0]
+              },
+              {
+                "segment": {"startIndex": 86, "endIndex": 210, "text": "This victory marks Spain's..."},
+                "groundingChunkIndices": [0, 1]
+              }
+            ]
+          }
+        }
+      ]
     }
-    // אחרת, טקסט רגיל
-    return new TextRun({ text: part });
-  });
-};
 
-// 2. פונקציה שמייצרת פסקה או כותרת בהתאם לסולמיות
-const createParagraphFromMarkdown = (markdownText) => {
-  // בדיקה אם הטקסט מתחיל ב-### (כותרת רמה 3)
-  if (markdownText.startsWith('### ')) {
-    const cleanText = markdownText.replace('### ', ''); // מסירים את הסולמיות
-    return new Paragraph({
-      text: cleanText,
-      heading: HeadingLevel.HEADING_3,
-    });
-  }
-  
-  // אם זו לא כותרת, נייצר פסקה רגילה ונבדוק אם יש בה טקסט מודגש
-  return new Paragraph({
-    children: parseBoldText(markdownText),
-  });
-};
-איך משתמשים בזה בקוד מהתשובה הקודמת?
-במקום לכתוב new Paragraph({ children: [new TextRun(section.text)] }), את פשוט קוראת לפונקציה: createParagraphFromMarkdown(section.text)
+The Gemini API returns the following information with the `groundingMetadata`:
 
+- `webSearchQueries` : Array of the search queries used. This is useful for debugging and understanding the model's reasoning process.
+- `searchEntryPoint` : Contains the HTML and CSS to render the required Search Suggestions. Full usage requirements are detailed in the [Terms of
+  Service](https://ai.google.dev/gemini-api/terms#grounding-with-google-search).
+- `groundingChunks` : Array of objects containing the web sources (`uri` and `title`).
+- `groundingSupports` : Array of chunks to connect model response `text` to the sources in `groundingChunks`. Each chunk links a text `segment` (defined by `startIndex` and `endIndex`) to one or more `groundingChunkIndices`. This is the key to building inline citations.
 
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-כדי להצמיד את הטקסט לשוליים הימניים (במיוחד כשעובדים עם שפה כמו עברית), צריך להגדיר שני דברים ברמת הפסקה (Paragraph): **יישור (Alignment)** ו**כיווניות טקסט (RTL/Bidi)**.
+Grounding with Google Search can also be used in combination with the [URL
+context tool](https://ai.google.dev/gemini-api/docs/url-context) to ground responses in both public
+web data and the specific URLs you provide.
 
-השימוש ב-`bidi: true` (Bidirectional) הוא קריטי בעברית, מכיוון שבלעדיו סימני פיסוק (כמו נקודה או פסיק) עלולים "לקפוץ" לצד הלא נכון של המשפט, גם אם הטקסט מיושר לימין.
+## Attributing sources with inline citations
 
-כך תעשי זאת בספריית `docx`:
+The API returns structured citation data, giving you complete control over how
+you display sources in your user interface. You can use the `groundingSupports`
+and `groundingChunks` fields to link the model's statements directly to their
+sources. Here is a common pattern for processing the metadata to create a
+response with inline, clickable citations.
 
-### שלב 1: ייבוא ההגדרות הנדרשות
+### Python
 
-קודם כל, הוסיפי את `AlignmentType` לרשימת הייבוא שלך מהספרייה:
+    def add_citations(response):
+        text = response.text
+        supports = response.candidates[0].grounding_metadata.grounding_supports
+        chunks = response.candidates[0].grounding_metadata.grounding_chunks
 
-```javascript
-import { Paragraph, TextRun, HeadingLevel, AlignmentType } from "docx";
+        # Sort supports by end_index in descending order to avoid shifting issues when inserting.
+        sorted_supports = sorted(supports, key=lambda s: s.segment.end_index, reverse=True)
 
-```
+        for support in sorted_supports:
+            end_index = support.segment.end_index
+            if support.grounding_chunk_indices:
+                # Create citation string like [1](link1)[2](link2)
+                citation_links = []
+                for i in support.grounding_chunk_indices:
+                    if i < len(chunks):
+                        uri = chunks[i].web.uri
+                        citation_links.append(f"[{i + 1}]({uri})")
 
-### שלב 2: הוספת ההגדרות לפסקאות
+                citation_string = ", ".join(citation_links)
+                text = text[:end_index] + citation_string + text[end_index:]
 
-כעת, נעדכן את הפונקציה `createParagraphFromMarkdown` שראינו קודם ונוסיף לה את יישור הימין והכיווניות:
+        return text
 
-```javascript
-const createParagraphFromMarkdown = (markdownText) => {
-  // 1. טיפול בכותרות (###)
-  if (markdownText.startsWith('### ')) {
-    const cleanText = markdownText.replace('### ', ''); 
-    return new Paragraph({
-      text: cleanText,
-      heading: HeadingLevel.HEADING_3,
-      alignment: AlignmentType.RIGHT, // יישור לימין
-      bidi: true, // הגדרת כיווניות מימין לשמאל (RTL)
-    });
-  }
+    # Assuming response with grounding metadata
+    text_with_citations = add_citations(response)
+    print(text_with_citations)
 
-  // 2. טיפול בפסקאות רגילות (כולל טקסט מודגש)
-  return new Paragraph({
-    children: parseBoldText(markdownText),
-    alignment: AlignmentType.RIGHT, // יישור לימין
-    bidi: true, // הגדרת כיווניות מימין לשמאל (RTL)
-  });
-};
+### JavaScript
 
-```
+    function addCitations(response) {
+        let text = response.text;
+        const supports = response.candidates[0]?.groundingMetadata?.groundingSupports;
+        const chunks = response.candidates[0]?.groundingMetadata?.groundingChunks;
 
-> **טיפ חשוב לגבי טבלאות:** > אם את משתמשת בטבלאות (כמו בדוגמה הראשונה שלך), כדאי להוסיף `alignment: AlignmentType.RIGHT` ו-`bidi: true` גם לפסקאות שנוצרות בתוך התאים (בתוך ה-`TableCell`), כדי שגם התוכן בטבלה ייראה מצוין.
+        // Sort supports by end_index in descending order to avoid shifting issues when inserting.
+        const sortedSupports = [...supports].sort(
+            (a, b) => (b.segment?.endIndex ?? 0) - (a.segment?.endIndex ?? 0),
+        );
 
----
+        for (const support of sortedSupports) {
+            const endIndex = support.segment?.endIndex;
+            if (endIndex === undefined || !support.groundingChunkIndices?.length) {
+            continue;
+            }
 
-האם תרצי שאראה לך כיצד להגדיר ש**כל המסמך** יהיה מימין-לשמאל (RTL) כברירת מחדל בהגדרות הראשיות, כך שלא תצטרכי לציין זאת ידנית עבור כל פסקה בנפרד?
+            const citationLinks = support.groundingChunkIndices
+            .map(i => {
+                const uri = chunks[i]?.web?.uri;
+                if (uri) {
+                return `[${i + 1}](${uri})`;
+                }
+                return null;
+            })
+            .filter(Boolean);
+
+            if (citationLinks.length > 0) {
+            const citationString = citationLinks.join(", ");
+            text = text.slice(0, endIndex) + citationString + text.slice(endIndex);
+            }
+        }
+
+        return text;
+    }
+
+    const textWithCitations = addCitations(response);
+    console.log(textWithCitations);
+
+The new response with inline citations will look like this:
+
+    Spain won Euro 2024, defeating England 2-1 in the final.[1](https:/...), [2](https:/...), [4](https:/...), [5](https:/...) This victory marks Spain's record-breaking fourth European Championship title.[5]((https:/...), [2](https:/...), [3](https:/...), [4](https:/...)
+
+## Pricing
+
+When you use Grounding with Google Search with Gemini 3, your project is billed
+for each search query that the model decides to execute. If the model decides to
+execute multiple search queries to answer a single prompt (for example,
+searching for `"UEFA Euro 2024 winner"` and `"Spain vs England Euro 2024 final
+score"` within the same API call), this counts as two billable uses of the tool
+for that request. For billing purposes, we ignore the empty web search queries
+when counting unique queries. This billing model only applies to Gemini 3
+models; when you use search grounding with Gemini 2.5 or older models, your
+project is billed per prompt.
+
+For detailed pricing information, see the [Gemini API pricing
+page](https://ai.google.dev/gemini-api/docs/pricing).
+
+## Supported models
+
+You can find full capabilities on the [model
+overview](https://ai.google.dev/gemini-api/docs/models) page.
+
+| Model | Grounding with Google Search |
+|---|---|
+| Gemini 3.1 Flash Image Preview | ✔️ |
+| Gemini 3.1 Pro Preview | ✔️ |
+| Gemini 3 Pro Image Preview | ✔️ |
+| Gemini 3 Flash Preview | ✔️ |
+| Gemini 2.5 Pro | ✔️ |
+| Gemini 2.5 Flash | ✔️ |
+| Gemini 2.5 Flash-Lite | ✔️ |
+| Gemini 2.0 Flash | ✔️ |
+
+> [!NOTE]
+> **Note:** Older models use a `google_search_retrieval` tool. For all current models, use the `google_search` tool as shown in the examples.
+
+## Supported tool combinations
+
+You can use Grounding with Google Search with other tools like
+[code execution](https://ai.google.dev/gemini-api/docs/code-execution) and
+[URL context](https://ai.google.dev/gemini-api/docs/url-context) to power more complex use cases.
+
+Gemini 3 models support combining built-in tools (like Grounding with Google
+Search) with custom tools (function calling). Learn more on the
+[tool combinations](https://ai.google.dev/gemini-api/docs/tool-combination) page.
+
+## What's next
+
+- Try the [Grounding with Google Search in the Gemini API
+  Cookbook](https://colab.research.google.com/github/google-gemini/cookbook/blob/main/quickstarts/Search_Grounding.ipynb).
+- Learn about other available tools, like [Function Calling](https://ai.google.dev/gemini-api/docs/function-calling).
+- Learn how to augment prompts with specific URLs using the [URL context
+  tool](https://ai.google.dev/gemini-api/docs/url-context).
