@@ -130,3 +130,20 @@ OUTPUT STRUCTURE (FOLLOW EXACTLY):
 <p dir="RTL" style="margin: 0px;color: rgb(34, 34, 34);font-family: Arial, Helvetica, sans-serif;font-size: small;font-style: normal;font-weight: 400;text-align: start;text-indent: 0px;background-color: rgb(255, 255, 255);"><span dir="LTR" style="font-size:16px;font-family: David, sans-serif;color: blue;">&nbsp;</span></p>
 <p dir="RTL" style="margin: 0px;color: rgb(34, 34, 34);font-family: Arial, Helvetica, sans-serif;font-size: small;font-style: normal;font-weight: 400;text-align: start;text-indent: 0px;background-color: rgb(255, 255, 255);"><span style="font-size:16px;font-family: David, sans-serif;color: blue;">תודה על שיתוף פעולה.</span></p>
 <p dir="RTL" style="margin: 0px;color: rgb(34, 34, 34);font-family: Arial, Helvetica, sans-serif;font-size: small;font-style: normal;font-weight: 400;text-align: start;text-indent: 0px;background-color: rgb(255, 255, 255);"><span dir="LTR">&nbsp;</span></p>
+
+
+----------------
+element.style {
+    /* position: relative; */
+    height: 100%;
+    background-color: transparent;
+}
+#app {
+    font-family: Segoe UI, Helvetica Neue, Roboto, sans-serif;
+    -ms-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+    line-height: normal;
+}
+.pyramid-app-container {
+   position: static !important; 
+}
