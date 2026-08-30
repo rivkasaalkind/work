@@ -147,3 +147,57 @@ element.style {
 .pyramid-app-container {
    position: static !important; 
 }
+
+8 Vulnerabilities
+
+Last Scan Status 
+9.3
+v4
+CVE-2026-78207
+Locked
+exceljs:4.4.0
+N/A
+CWE-1321
+7.5
+v3
+XRAY-1060232
+Locked
+exceljs:4.4.0
+N/A
+CWE-73 (+1)
+8.2
+v3
+XRAY-1060231
+Locked
+exceljs:4.4.0
+N/A
+CWE-1236
+7.5
+v3
+XRAY-1060230
+Locked
+exceljs:4.4.0
+N/A
+CWE-409
+8.4
+v4
+CVE-2026-78209
+Locked
+exceljs:4.4.0
+N/A
+CWE-1236
+8.7
+v4
+CVE-2026-78208
+Locked
+exceljs:4.4.0
+N/A
+CWE-73
+8.7
+v4
+CVE-2026-78206
+Locked
+exceljs:4.4.0
+N/A
+CWE-409
+
