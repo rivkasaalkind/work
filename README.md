@@ -148,9 +148,16 @@ element.style {
    position: static !important; 
 }
 
-8 Vulnerabilities
+11 Vulnerabilities
 
 Last Scan Status 
+9.8
+v3
+XRAY-1060233
+Locked
+exceljs:4.4.0
+N/A
+CWE-1321
 9.3
 v4
 CVE-2026-78207
@@ -158,6 +165,27 @@ Locked
 exceljs:4.4.0
 N/A
 CWE-1321
+7.5
+v3
+CVE-2026-77078
+Locked
+multer:2.2.0
+2.3.0
+CWE-248
+7.5
+v3
+CVE-2026-77037
+Locked
+multer:2.2.0
+2.3.0
+CWE-459 (+1)
+7.5
+v3
+CVE-2026-82333
+Locked
+multer:2.2.0
+2.3.0
+CWE-400
 7.5
 v3
 XRAY-1060232
@@ -200,4 +228,3 @@ Locked
 exceljs:4.4.0
 N/A
 CWE-409
-
